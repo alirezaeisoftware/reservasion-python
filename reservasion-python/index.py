@@ -5,7 +5,7 @@ from myclass import *
 item=-1
 def creat_win(win_title):
     w=Toplevel()
-    w.geometry('450x450+350+500')
+    w.geometry('450x450+400+400')
     w.title(win_title)
     return w
 def creat_lb_entry(win_name,lb_txt,r,c):
