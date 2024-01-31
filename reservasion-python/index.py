@@ -68,6 +68,51 @@ def editPatient():
         entnewname.config(textvariable=nameval)
         entnewfamil.config(textvariable=StringVar(value=lstobject[item].famil))
     lstbox.bind('<<ListboxSelect>>',fselect)
+
+def give_turn():
+    win_edit=creat_win('نوبت دهی')
+
+    lstbox_p,lstobject_p=creat_listbox(Patient, win_edit,'لیست بیماران', 0, 0)
+    lstbox_d,lstobject_d=creat_listbox(Docter, win_edit,'لیست دکترها', 0, 0)
+    lstbox_t,lstobject_t=creat_listbox(Turn, win_edit,'لیست نوبت ها', 0, 0)
+
+    bntedit=creat_2button(win_edit,'ثبت نوبت', 4, 1)
+
+    def fedit():
+        global item
+        global doctor_code
+        global turn_number
+        lstobject_p[item].edit(lstobject_p[item].name, lstobject_p[item].famil, str(doctor_code), str(turn_number))
+        messagebox.showinfo('ویرایش','ویرایش با موفقیت انجام شد')
+        win_edit.destroy()
+
+    bntedit.config(command=fedit)
+
+    def p_select(event):
+        global item
+        try:
+            item=lstbox_p.curselection()[0]
+        except:
+            pass
+
+    def d_select(event):
+        global doctor_code
+        try:
+            doctor_code = lstobject_d[lstbox_d.curselection()[0]].code
+        except:
+            pass
+
+    def t_select(event):
+        global turn_number
+        try:
+            turn_number = lstobject_t[lstbox_t.curselection()[0]].number
+        except:
+            pass
+
+    lstbox_p.bind('<<ListboxSelect>>',p_select)
+    lstbox_d.bind('<<ListboxSelect>>',d_select)
+    lstbox_t.bind('<<ListboxSelect>>',t_select)
+
 def deletePatient():
     win_delete=creat_win('حذف بیماران')
     lstbox,lstobject=creat_listbox(Patient, win_delete,'لیست بیماران', 0, 0)
@@ -155,12 +200,12 @@ def deleteDocter():
         entnewfamil.config(textvariable=StringVar(value=lstobject[item].famil))
         entnewcode.config(textvariable=StringVar(value=lstobject[item].code))
     lstbox.bind('<<ListboxSelect>>',fselect)
-patientmenu.add_command(label='گرفتن نوبت ')
+patientmenu.add_command(label='گرفتن نوبت ', command=give_turn)
 patientmenu.add_command(label='ثبت بیمار جدید',command=newPatient)
 patientmenu.add_command(label='ویرایش بیمار' , command=editPatient)
 patientmenu.add_command(label='حذف بیمار' , command=deletePatient)
 
-doctormenu.add_command(label='اضافه کردن نوبت')
+doctormenu.add_command(label='تجویز')
 doctormenu.add_command(label='ثبت دکتر جدید' , command=newDocter)
 doctormenu.add_command(label='ویرایش دکتر' , command=editDocter)
 doctormenu.add_command(label='حدف دکتر' , command=deleteDocter)

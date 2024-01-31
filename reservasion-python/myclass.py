@@ -99,7 +99,33 @@ class Patient(Person):
             f.close()
             return lst
             
+class Turn(Entity):
+    filename='turns.txt'
+    def __init__(self, start, end, number):
+        self.start = start
+        self.end = end
+        self.number = number
+        
+    def save(self):
+            self.sabt(Turn.filename)
+    def edit(self,*t):
+            self.virayesh(Turn.filename,t)
+    def delete(self):
+            self.hazf(Turn.filename)
             
+    def __str__(self):
+            return self.number
+    @classmethod
+    def open_file(cls):
+            f=open(Turn.filename,'r',encoding='utf-8')
+            s=f.read().split('#')
+            s.pop()
+            lst=[]
+            for t in  s:
+                v=t.split('$')
+                lst.append(Turn(v[0], v[1], v[2]))
+            f.close()
+            return lst 
             
             
             
