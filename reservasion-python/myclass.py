@@ -75,8 +75,10 @@ class Docter(Person):
       
 class Patient(Person):
     filename='patient.txt'
-    def __init__(self, name, famil):
+    def __init__(self, name, famil, doctor=None, turn=None):
         Person.__init__(self, name, famil)
+        self.doctor = doctor
+        self.turn = turn
         
     def save(self):
             self.sabt(Patient.filename)
@@ -95,7 +97,10 @@ class Patient(Person):
             lst=[]
             for t in  s:
                 v=t.split('$')
-                lst.append(Patient(v[0], v[1]))
+                try:
+                    lst.append(Patient(v[0], v[1], v[2], v[3]))
+                except:
+                     lst.append(Patient(v[0], v[1]))
             f.close()
             return lst
             

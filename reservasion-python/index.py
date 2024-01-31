@@ -25,6 +25,10 @@ def creat_listbox(classname,win,txt_lb,r,c):
     lstbox=Listbox(win,listvariable=lstvar,justify='right')
     lstbox.grid(rowspan=r+4,column=c)
     return lstbox,lstobject
+
+def create_label(data, win, r, c):
+    Label(win, text=data).grid(row=r, column=c)
+    
 win=Tk()
 win.geometry('500x300+200+200')
 win.title('نوبت دهی')
@@ -47,6 +51,7 @@ def newPatient():
         messagebox.showinfo('ثبت','ثبت با موفقیت انجام شد')
         win_add.destroy()
     bntadd.config(command=fadd)
+
 def editPatient():
     win_edit=creat_win('ویرایش بیماران')
     lstbox,lstobject=creat_listbox(Patient, win_edit,'لیست بیماران', 0, 0)
@@ -70,21 +75,25 @@ def editPatient():
     lstbox.bind('<<ListboxSelect>>',fselect)
 
 def give_turn():
-    win_edit=creat_win('نوبت دهی')
+    win_turn=creat_win('نوبت دهی')
 
-    lstbox_p,lstobject_p=creat_listbox(Patient, win_edit,'لیست بیماران', 0, 0)
-    lstbox_d,lstobject_d=creat_listbox(Docter, win_edit,'لیست دکترها', 0, 0)
-    lstbox_t,lstobject_t=creat_listbox(Turn, win_edit,'لیست نوبت ها', 0, 0)
+    lstbox_p,lstobject_p=creat_listbox(Patient, win_turn,'لیست بیماران', 0, 0)
+    lstbox_d,lstobject_d=creat_listbox(Docter, win_turn,'لیست دکترها', 0, 0)
+    lstbox_t,lstobject_t=creat_listbox(Turn, win_turn,'لیست نوبت ها', 0, 0)
 
-    bntedit=creat_2button(win_edit,'ثبت نوبت', 4, 1)
+    p_show = creat_lb_entry(win_turn, 'p', 0, 1)
+    d_show = creat_lb_entry(win_turn, 'd', 1, 1)
+    t_show = creat_lb_entry(win_turn, 't', 2, 1)
+
+    bntedit=creat_2button(win_turn,'ثبت نوبت', 4, 1)
 
     def fedit():
         global item
-        global doctor_code
-        global turn_number
-        lstobject_p[item].edit(lstobject_p[item].name, lstobject_p[item].famil, str(doctor_code), str(turn_number))
+        global doc
+        global tur
+        lstobject_p[item].edit(lstobject_p[item].name, lstobject_p[item].famil, str(doc.code), str(tur.number))
         messagebox.showinfo('ویرایش','ویرایش با موفقیت انجام شد')
-        win_edit.destroy()
+        win_turn.destroy()
 
     bntedit.config(command=fedit)
 
@@ -92,20 +101,23 @@ def give_turn():
         global item
         try:
             item=lstbox_p.curselection()[0]
+            p_show.config(textvariable=StringVar(str(item)))
         except:
             pass
 
     def d_select(event):
-        global doctor_code
+        global doc
         try:
-            doctor_code = lstobject_d[lstbox_d.curselection()[0]].code
+            doc = lstobject_d[lstbox_d.curselection()[0]]
+            d_show.config(textvariable=StringVar(str(doc)))
         except:
             pass
 
     def t_select(event):
-        global turn_number
+        global tur
         try:
-            turn_number = lstobject_t[lstbox_t.curselection()[0]].number
+            tur = lstobject_t[lstbox_t.curselection()[0]].number
+            t_show.config(textvariable=StringVar(str(tur)))
         except:
             pass
 
