@@ -8,6 +8,13 @@ def creat_win(win_title):
     w.geometry('450x450+400+400')
     w.title(win_title)
     return w
+
+def creat_win_2(win_title):
+    w=Toplevel()
+    # w.geometry('450x450+400+400')
+    w.title(win_title)
+    return w
+
 def creat_lb_entry(win_name,lb_txt,r,c):
     Label(win_name,text=lb_txt).grid(row=r,column=c)
     ent=Entry(win_name)
@@ -75,24 +82,24 @@ def editPatient():
     lstbox.bind('<<ListboxSelect>>',fselect)
 
 def give_turn():
-    win_turn=creat_win('نوبت دهی')
+    win_turn=creat_win_2('نوبت دهی')
 
     lstbox_p,lstobject_p=creat_listbox(Patient, win_turn,'لیست بیماران', 0, 0)
-    lstbox_d,lstobject_d=creat_listbox(Docter, win_turn,'لیست دکترها', 0, 0)
-    lstbox_t,lstobject_t=creat_listbox(Turn, win_turn,'لیست نوبت ها', 0, 0)
+    lstbox_d,lstobject_d=creat_listbox(Docter, win_turn,'لیست دکترها', 5, 0)
+    lstbox_t,lstobject_t=creat_listbox(Turn, win_turn,'لیست نوبت ها', 15, 0)
 
-    p_show = creat_lb_entry(win_turn, 'p', 0, 1)
-    d_show = creat_lb_entry(win_turn, 'd', 1, 1)
-    t_show = creat_lb_entry(win_turn, 't', 2, 1)
+    p_show = creat_lb_entry(win_turn, 'بیمار', 0, 1)
+    d_show = creat_lb_entry(win_turn, 'دکتر', 1, 1)
+    t_show = creat_lb_entry(win_turn, 'نوبت', 2, 1)
 
-    bntedit=creat_2button(win_turn,'ثبت نوبت', 4, 1)
+    bntedit=creat_2button(win_turn,'ثبت نوبت', 10, 1)
 
     def fedit():
         global item
         global doc
         global tur
-        lstobject_p[item].edit(lstobject_p[item].name, lstobject_p[item].famil, str(doc.code), str(tur.number))
-        messagebox.showinfo('ویرایش','ویرایش با موفقیت انجام شد')
+        item.edit(item.name, item.famil, str(doc.code), str(tur.number), None)
+        messagebox.showinfo('ویرایش','ثبت نوبت با موفقیت انجام شد')
         win_turn.destroy()
 
     bntedit.config(command=fedit)
@@ -100,8 +107,8 @@ def give_turn():
     def p_select(event):
         global item
         try:
-            item=lstbox_p.curselection()[0]
-            p_show.config(textvariable=StringVar(str(item)))
+            item=lstobject_p[lstbox_p.curselection()[0]]
+            p_show.config(textvariable=StringVar(value=str(item)))
         except:
             pass
 
@@ -109,15 +116,15 @@ def give_turn():
         global doc
         try:
             doc = lstobject_d[lstbox_d.curselection()[0]]
-            d_show.config(textvariable=StringVar(str(doc)))
+            d_show.config(textvariable=StringVar(value=str(doc)))
         except:
             pass
 
     def t_select(event):
         global tur
         try:
-            tur = lstobject_t[lstbox_t.curselection()[0]].number
-            t_show.config(textvariable=StringVar(str(tur)))
+            tur = lstobject_t[lstbox_t.curselection()[0]]
+            t_show.config(textvariable=StringVar(value=str(tur)))
         except:
             pass
 
@@ -125,6 +132,38 @@ def give_turn():
     lstbox_d.bind('<<ListboxSelect>>',d_select)
     lstbox_t.bind('<<ListboxSelect>>',t_select)
 
+def prescribe():
+    win_pre = creat_win('تجویز')
+    lstbox, lstobjects = creat_listbox(Patient, win_pre, 'لیست بیماران', 0, 0)
+    ent_pres = creat_lb_entry(win_pre, 'نسخه', 0, 1)
+    bnt = creat_2button(win_pre, 'ثبت', 2, 1)
+
+    def submit():
+        global item
+        item.edit(item.name, item.famil, item.doctor, item.turn, ent_pres.get())
+        messagebox.showinfo('ویرایش','ثبت نوبت با موفقیت انجام شد')
+        win_pre.destroy()
+    
+    bnt.config(command=submit)
+
+    def select(event):
+        global item
+        item = lstobjects[lstbox.curselection()[0]]
+    
+    lstbox.bind('<<ListboxSelect>>', select)
+
+def show_pre():
+    win_sp = creat_win('تحویز ها')
+    lstbox, lstobjects = creat_listbox(Patient, win_sp, 'لیست بیماران', 0, 0)
+    ent_pre = creat_lb_entry(win_sp, 'تحویز', 0, 1)
+
+    def select(event):
+        global item
+        item = lstobjects[lstbox.curselection()[0]]
+        ent_pre.config(textvariable=StringVar(value=item.prescription))
+    
+    lstbox.bind('<<ListboxSelect>>', select)
+    
 def deletePatient():
     win_delete=creat_win('حذف بیماران')
     lstbox,lstobject=creat_listbox(Patient, win_delete,'لیست بیماران', 0, 0)
@@ -217,13 +256,13 @@ patientmenu.add_command(label='ثبت بیمار جدید',command=newPatient)
 patientmenu.add_command(label='ویرایش بیمار' , command=editPatient)
 patientmenu.add_command(label='حذف بیمار' , command=deletePatient)
 
-doctormenu.add_command(label='تجویز')
+doctormenu.add_command(label='تجویز', command=prescribe)
 doctormenu.add_command(label='ثبت دکتر جدید' , command=newDocter)
 doctormenu.add_command(label='ویرایش دکتر' , command=editDocter)
 doctormenu.add_command(label='حدف دکتر' , command=deleteDocter)
 
 
-prescription.add_command(label='نشان دادن تجویز')
+prescription.add_command(label='نشان دادن تجویز', command=show_pre)
 
 
 

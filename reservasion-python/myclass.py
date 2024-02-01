@@ -15,12 +15,14 @@ class Entity:
         old=self.get_att()
         new=''
         for  v in t:
-            new+=v+'$'
+            new+=str(v)+'$'
         new=new[:-1]
         new+='#'
         f=open(filename,'r',encoding='utf-8')
         s=f.read()
         f.close()
+        print(new)
+        print(old)
         s=s.replace(old, new)
         f=open(filename,'w',encoding='utf-8')
         f.write(s)
@@ -75,15 +77,17 @@ class Docter(Person):
       
 class Patient(Person):
     filename='patient.txt'
-    def __init__(self, name, famil, doctor=None, turn=None):
+    def __init__(self, name, famil, doctor=None, turn=None, prescription=None):
         Person.__init__(self, name, famil)
         self.doctor = doctor
         self.turn = turn
+        self.prescription = prescription
         
     def save(self):
             self.sabt(Patient.filename)
     def edit(self,*t):
             self.virayesh(Patient.filename,t)
+            self.__init__(*t)
     def delete(self , *t):
             self.hazf(Patient.filename)
             
@@ -98,9 +102,12 @@ class Patient(Person):
             for t in  s:
                 v=t.split('$')
                 try:
-                    lst.append(Patient(v[0], v[1], v[2], v[3]))
+                    lst.append(Patient(v[0], v[1], v[2], v[3], v[4]))
                 except:
-                     lst.append(Patient(v[0], v[1]))
+                    try:
+                        lst.append(v[0], v[1], v[2], v[3])
+                    except:
+                        lst.append(Patient(v[0], v[1]))
             f.close()
             return lst
             
@@ -119,7 +126,7 @@ class Turn(Entity):
             self.hazf(Turn.filename)
             
     def __str__(self):
-            return self.number
+            return 'شماره: ' + self.number + 'تایم شروع: ' + self.start + 'تایم پایان: ' + self.end
     @classmethod
     def open_file(cls):
             f=open(Turn.filename,'r',encoding='utf-8')
